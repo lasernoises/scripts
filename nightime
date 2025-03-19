@@ -1,0 +1,4 @@
+#!/bin/sh
+
+pkill gammastep
+gammastep -l 47:8
