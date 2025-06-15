@@ -1,7 +1,0 @@
-#!/bin/sh
-
-set -e
-
-cd ~/tmp
-
-xdg-open "$(ls -t | head -n 1)"
