@@ -6,7 +6,7 @@ def main [--pr: int] {
   let pr = if $pr != null {
     gh pr view $pr --json $json_fields | from json
   } else {
-    let prs = gh search prs '' --review-requested '@me' --json $json_fields | from json
+    let prs = gh search prs '' --review-requested '@me' --state open --json $json_fields | from json
 
     $prs | input list --fuzzy --display title
   }
