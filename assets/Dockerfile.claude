@@ -1,0 +1,7 @@
+FROM node:24-alpine
+
+RUN npm install -g @anthropic-ai/claude-code
+
+RUN apk add --no-cache rust cargo git
+
+ENTRYPOINT ["claude"]
