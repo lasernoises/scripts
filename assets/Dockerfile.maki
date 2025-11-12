@@ -1,18 +1,17 @@
 FROM alpine:latest
 
-# base stuff for claude code
+# base stuff
 RUN apk add --no-cache curl bash jq libstdc++ libgcc
 
 # all other packages I want inside the containers
-RUN apk add --no-cache rust cargo git jujutsu ripgrep nushell nodejs npm
-
-RUN apk add --no-cache openssh
+RUN apk add --no-cache rust cargo git jujutsu ripgrep nushell nodejs npm pnpm
 
 RUN adduser -D maki
 
 USER maki
 WORKDIR /home/maki
 
+RUN mkdir --parents /home/maki/.config
 RUN mkdir --parents /home/maki/.local/bin
 
 RUN curl -fsSL https://maki.sh/install.sh | MAKI_INSTALL_DIR="/home/maki/.local/bin" sh

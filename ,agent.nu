@@ -3,112 +3,42 @@
 use std assert
 use secrets.nu
 
-let base_path = $nu.home-dir + '/agents/'
+def run_agent [path: string] {
+  let relative_path = $path | path relative-to $nu.home-dir
 
-def list [] {
-  ls $base_path | get name | path basename
-}
-
-def run_agent [name: string] {
-  let path = $base_path + $name
-
-  # (docker run
-  #   --rm
-  #   --interactive
-  #   --tty
-  #   --volume $'($nu.home-dir)/.claude.json:/home/claude/.claude.json'
-  #   --volume $'($nu.home-dir)/.claude:/home/claude/.claude'
-  #   --volume $'($path):/code'
-  #   --workdir /code
-  #   --user $'(id --user):(id --group)'
-  #   localhost/claude)
-
-  # (docker run
-  #   --rm
-  #   --interactive
-  #   --tty
-  #   --volume $'($nu.home-dir)/.pi:/home/pi/.pi'
-  #   --volume $'($path):/code'
-  #   --env $'CEREBRAS_API_KEY=($secrets.CEREBRAS_API_KEY)'
-  #   --workdir /code
-  #   --user $'(id --user):(id --group)'
-  #   localhost/pi)
+  # This will blow up in our face if we ever allow running agents in arbirary directories because of
+  # nesting.
+  mkdir ($nu.home-dir)/.local/state/agent/($relative_path)/.local/state/maki
+  mkdir ($nu.home-dir)/.local/state/agent/($relative_path)/.config/jj
 
   (docker run
     --rm
     --interactive
     --tty
-    --volume $'($nu.home-dir)/.config/maki:/home/maki/.config/maki'
-    --volume $'($nu.home-dir)/.cache/maki:/home/maki/.cache/maki'
-    --volume $'($nu.home-dir)/.local/share/maki:/home/maki/.local/share/maki'
-    --volume $'($nu.home-dir)/.local/state/maki:/home/maki/.local/state/maki'
-    --volume $'($path):/code'
-    --env $'ANTHROPIC_API_KEY=($secrets.ANTHROPIC_API_KEY)'
-    --workdir /code
-    --user $'(id --user):(id --group)'
+    --volume ($nu.home-dir)/.config/maki:/home/maki/.config/maki
+    --volume ($nu.home-dir)/.cache/maki:/home/maki/.cache/maki
+    --volume ($nu.home-dir)/.local/state/agent/($relative_path)/.config/jj:/home/maki/.config/jj
+    --volume ($nu.home-dir)/.config/agent/jj:/home/maki/.config/jj/config.toml
+    --volume ($nu.home-dir)/.local/state/agent/($relative_path)/.local/state/maki:/home/maki/.local/state/maki
+    --volume ($nu.home-dir)/.local/state/maki/auth:/home/maki/.local/state/maki/auth
+    --volume ($path):($path)
+    --env ANTHROPIC_API_KEY=($secrets.ANTHROPIC_API_KEY)
+    --workdir $path
+    --user (id --user):(id --group)
     localhost/maki --yolo)
-
-  if ([keep, delete] | input list) == delete {
-    cd $path
-    jj workspace forget
-    cd ..
-    rm --recursive $path
-  }
 }
 
 def "main update" [] {
   open --raw ($env.FILE_PWD + '/assets/Dockerfile.maki') | docker build --pull --no-cache --tag localhost/maki -
 }
 
-def "main new" [] {
+def "main run" [] {
   assert (
     (pwd | str starts-with $'($nu.home-dir)/Projects') or
     (pwd | str starts-with $'($nu.home-dir)/clones')
   )
 
-  let prefix = (pwd | path basename) + '-'
-
-  let name = input $'name: ($prefix)'
-
-  let name = $prefix + $name
-
-  let path = $base_path + $name
-
-  if ($path | path exists) {
-    error make { msg: $'Agent ($name) already exists!' }
-  }
-
-  # cp --progress --recursive . $path
-
-  mkdir $path
-  # ^cp --reflink=always --recursive . $path
-  jj workspace add $path
-
-  run_agent $name
-}
-
-def "main new-empty" [] {
-  let name = input "name: "
-
-  let path = $base_path + $name
-
-  if ($path | path exists) {
-    error make { msg: $'Agent ($name) already exists!' }
-  }
-
-  mkdir $path
-
-  run_agent $name
-}
-
-def "main ls" [] {
-  list
-}
-
-def "main run" [] {
-  let name = (list | input list)
-
-  run_agent $name
+  run_agent (pwd)
 }
 
 def "main" [] {
