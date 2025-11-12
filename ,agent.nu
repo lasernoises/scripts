@@ -9,7 +9,7 @@ def list [] {
   ls $base_path | get name | path basename
 }
 
-def run [name: string] {
+def run_agent [name: string] {
   let path = $base_path + $name
 
   # (docker run
@@ -50,7 +50,7 @@ def run [name: string] {
 }
 
 def "main update" [] {
-  open --raw ($env.FILE_PWD + '/assets/Dockerfile.maki') | docker build --pull --tag localhost/maki -
+  open --raw ($env.FILE_PWD + '/assets/Dockerfile.maki') | docker build --pull --no-cache --tag localhost/maki -
 }
 
 def "main new" [] {
@@ -77,7 +77,7 @@ def "main new" [] {
   # ^cp --reflink=always --recursive . $path
   jj workspace add $path
 
-  run $name
+  run_agent $name
 }
 
 def "main new-empty" [] {
@@ -91,7 +91,7 @@ def "main new-empty" [] {
 
   mkdir $path
 
-  run $name
+  run_agent $name
 }
 
 def "main ls" [] {
@@ -101,7 +101,7 @@ def "main ls" [] {
 def "main run" [] {
   let name = (list | input list)
 
-  run $name
+  run_agent $name
 }
 
 def "main" [] {
