@@ -1,7 +1,7 @@
 #!/usr/bin/env -S nu --stdin
 
 # A bit of a hacky way to remove common leading spaces from some text.
-def main [] {
+export def outdent [] {
   let lines = $in | lines
 
   let min_indent = $lines
@@ -16,3 +16,5 @@ def main [] {
     | each {|line| $line | str substring $min_indent..($line | str length) }
     | str join "\n") + (if $trailing_newline { "\n" } else { "" })
 }
+
+def main [] { outdent }
