@@ -1,6 +1,21 @@
 #!/usr/bin/env nu
 
-let path = $"($env.HOME)/sync_flo/screenshots/(^date "+%Y-%m-%d_%H:%M:%S").png"
-slurp | grim -g - $path
+def main [--full, --pre] {
+  let path = $"($env.HOME)/sync_flo/screenshots/(^date "+%Y-%m-%d_%H:%M:%S").png"
 
-cat $path | wl-copy
+  if $full {
+    grim $path
+  } else if $pre {
+    let area = slurp
+  
+    let next = ("continue\nabort" | wmenu)
+
+    if $next == "continue" {
+      $area | grim -g - $path
+    }
+  } else {
+    slurp | grim -g - $path
+  }
+
+  cat $path | wl-copy
+}
