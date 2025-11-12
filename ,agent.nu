@@ -2,7 +2,7 @@
 
 use std assert
 
-let base_path = $nu.home-path + '/agents/'
+let base_path = $nu.home-dir + '/agents/'
 
 def list [] {
   ls $base_path | get name | path basename
@@ -15,8 +15,8 @@ def run [name: string] {
     --rm
     --interactive
     --tty
-    --volume $'($nu.home-path)/.claude.json:/home/claude/.claude.json'
-    --volume $'($nu.home-path)/.claude:/home/claude/.claude'
+    --volume $'($nu.home-dir)/.claude.json:/home/claude/.claude.json'
+    --volume $'($nu.home-dir)/.claude:/home/claude/.claude'
     --volume $'($path):/code'
     --workdir /code
     --user $'(id --user):(id --group)'
@@ -28,7 +28,7 @@ def "main update" [] {
 }
 
 def "main new" [] {
-  assert (pwd | str starts-with $'($nu.home-path)/Projects')
+  assert (pwd | str starts-with $'($nu.home-dir)/Projects')
 
   let prefix = (pwd | path basename) + '-'
 
