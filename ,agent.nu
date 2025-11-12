@@ -23,24 +23,41 @@ def run [name: string] {
   #   --user $'(id --user):(id --group)'
   #   localhost/claude)
 
+  # (docker run
+  #   --rm
+  #   --interactive
+  #   --tty
+  #   --volume $'($nu.home-dir)/.pi:/home/pi/.pi'
+  #   --volume $'($path):/code'
+  #   --env $'CEREBRAS_API_KEY=($secrets.CEREBRAS_API_KEY)'
+  #   --workdir /code
+  #   --user $'(id --user):(id --group)'
+  #   localhost/pi)
+
   (docker run
     --rm
     --interactive
     --tty
-    --volume $'($nu.home-dir)/.pi:/home/pi/.pi'
+    --volume $'($nu.home-dir)/.config/maki:/home/maki/.config/maki'
+    --volume $'($nu.home-dir)/.cache/maki:/home/maki/.cache/maki'
+    --volume $'($nu.home-dir)/.local/share/maki:/home/maki/.local/share/maki'
+    --volume $'($nu.home-dir)/.local/state/maki:/home/maki/.local/state/maki'
     --volume $'($path):/code'
-    --env $'CEREBRAS_API_KEY=($secrets.CEREBRAS_API_KEY)'
+    --env $'ANTHROPIC_API_KEY=($secrets.ANTHROPIC_API_KEY)'
     --workdir /code
     --user $'(id --user):(id --group)'
-    localhost/pi)
+    localhost/maki --yolo)
 }
 
 def "main update" [] {
-  open --raw ($env.FILE_PWD + '/assets/Dockerfile.pi') | docker build --pull --tag localhost/pi -
+  open --raw ($env.FILE_PWD + '/assets/Dockerfile.maki') | docker build --pull --tag localhost/maki -
 }
 
 def "main new" [] {
-  assert (pwd | str starts-with $'($nu.home-dir)/Projects')
+  assert (
+    (pwd | str starts-with $'($nu.home-dir)/Projects') or
+    (pwd | str starts-with $'($nu.home-dir)/clones')
+  )
 
   let prefix = (pwd | path basename) + '-'
 
