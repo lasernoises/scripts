@@ -5,7 +5,9 @@ def main [] {
   let lines = $in | lines
 
   let min_indent = $lines
-    | each {|line| ($line | str length) - ($line | str trim --left --char ' ' | str length) }
+    | each {|line| if $line == "" { null } else {
+      ($line | str length) - ($line | str trim --left --char ' ' | str length)
+    } }
     | math min
 
   let trailing_newline = $in | str ends-with "\n"
