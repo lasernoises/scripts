@@ -74,7 +74,8 @@ def "main new" [] {
   # cp --progress --recursive . $path
 
   mkdir $path
-  ^cp --reflink=always --recursive . $path
+  # ^cp --reflink=always --recursive . $path
+  jj workspace add $path
 
   run $name
 }
