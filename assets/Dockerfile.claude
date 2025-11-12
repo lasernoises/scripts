@@ -1,7 +1,18 @@
-FROM node:24-alpine
+FROM alpine:latest
 
-RUN npm install -g @anthropic-ai/claude-code
+# base stuff for claude code
+RUN apk add --no-cache curl bash jq libstdc++ libgcc
 
-RUN apk add --no-cache rust cargo git
+# all other packages I want inside the containers
+RUN apk add --no-cache rust cargo git jujutsu ripgrep nushell nodejs
+
+RUN adduser -D claude
+
+USER claude
+WORKDIR /home/claude
+
+RUN curl -fsSL https://claude.ai/install.sh | bash
+
+ENV PATH="/home/claude/.local/bin:${PATH}"
 
 ENTRYPOINT ["claude"]
