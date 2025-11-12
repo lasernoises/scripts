@@ -8,13 +8,11 @@ RUN apk add --no-cache rust cargo git jujutsu ripgrep nushell nodejs npm
 
 RUN apk add --no-cache openssh
 
-RUN adduser -D claude
+RUN npm install --global @mariozechner/pi-coding-agent
 
-USER claude
-WORKDIR /home/claude
+RUN adduser -D pi
 
-RUN curl -fsSL https://claude.ai/install.sh | bash
+USER pi
+WORKDIR /home/pi
 
-ENV PATH="/home/claude/.local/bin:${PATH}"
-
-ENTRYPOINT ["claude"]
+ENTRYPOINT ["pi"]

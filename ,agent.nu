@@ -1,6 +1,7 @@
 #!/usr/bin/env nu
 
 use std assert
+use secrets.nu
 
 let base_path = $nu.home-dir + '/agents/'
 
@@ -11,20 +12,31 @@ def list [] {
 def run [name: string] {
   let path = $base_path + $name
 
+  # (docker run
+  #   --rm
+  #   --interactive
+  #   --tty
+  #   --volume $'($nu.home-dir)/.claude.json:/home/claude/.claude.json'
+  #   --volume $'($nu.home-dir)/.claude:/home/claude/.claude'
+  #   --volume $'($path):/code'
+  #   --workdir /code
+  #   --user $'(id --user):(id --group)'
+  #   localhost/claude)
+
   (docker run
     --rm
     --interactive
     --tty
-    --volume $'($nu.home-dir)/.claude.json:/home/claude/.claude.json'
-    --volume $'($nu.home-dir)/.claude:/home/claude/.claude'
+    --volume $'($nu.home-dir)/.pi:/home/pi/.pi'
     --volume $'($path):/code'
+    --env $'CEREBRAS_API_KEY=($secrets.CEREBRAS_API_KEY)'
     --workdir /code
     --user $'(id --user):(id --group)'
-    localhost/claude)
+    localhost/pi)
 }
 
 def "main update" [] {
-  open --raw ($env.FILE_PWD + '/assets/Dockerfile.claude') | docker build --tag localhost/claude -
+  open --raw ($env.FILE_PWD + '/assets/Dockerfile.pi') | docker build --pull --tag localhost/pi -
 }
 
 def "main new" [] {
@@ -46,6 +58,20 @@ def "main new" [] {
 
   mkdir $path
   ^cp --reflink=always --recursive . $path
+
+  run $name
+}
+
+def "main new-empty" [] {
+  let name = input "name: "
+
+  let path = $base_path + $name
+
+  if ($path | path exists) {
+    error make { msg: $'Agent ($name) already exists!' }
+  }
+
+  mkdir $path
 
   run $name
 }
