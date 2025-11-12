@@ -47,6 +47,13 @@ def run_agent [name: string] {
     --workdir /code
     --user $'(id --user):(id --group)'
     localhost/maki --yolo)
+
+  if ([keep, delete] | input list) == delete {
+    cd $path
+    jj workspace forget
+    cd ..
+    rm --recursive $path
+  }
 }
 
 def "main update" [] {
