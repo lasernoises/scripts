@@ -1,12 +1,20 @@
 #!/usr/bin/env nu
 
-def main [filter: string, path: path] {
-  for file in (ls ($path | into glob)) {
-  # for file in (ls ($'($path)/**/*.json' | into glob)) {
-    let out = jq $filter $file.name
-    if $out != '' {
-      print $'($file.name):'
-      # print $out
+def main [--output, filter: string, ...path: path] {
+  for file in (^find ...$path -name '*.json' | lines) {
+    try {
+      let out = jq $filter $file
+
+      if $out != '' {
+        print $'($file)(if $output { ':' } else { '' })'
+
+        if $output {
+          print $out
+        }
+      }
+    } catch {
+      print --stderr $"Error in ($file)!"
+      exit 1
     }
   }
 }
