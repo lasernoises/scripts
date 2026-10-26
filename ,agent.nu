@@ -35,7 +35,8 @@ def "main update" [] {
 def "main run" [] {
   assert (
     (pwd | str starts-with $'($nu.home-dir)/Projects') or
-    (pwd | str starts-with $'($nu.home-dir)/clones')
+    (pwd | str starts-with $'($nu.home-dir)/clones') or
+    (pwd | str starts-with $'($nu.home-dir)/purpur/projects')
   )
 
   run_agent (pwd)
