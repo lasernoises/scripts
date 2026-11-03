@@ -23,6 +23,7 @@ def run_agent [path: string] {
     --volume ($nu.home-dir)/.local/state/maki/auth:/home/maki/.local/state/maki/auth
     --volume ($path):($path)
     --env ANTHROPIC_API_KEY=($secrets.ANTHROPIC_API_KEY)
+    --env PURPUR_OUTLINE_API_KEY=($secrets.PURPUR_OUTLINE_API_KEY)
     --workdir $path
     --user (id --user):(id --group)
     localhost/maki --yolo)
