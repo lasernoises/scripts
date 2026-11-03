@@ -26,7 +26,7 @@ def run_agent [path: string] {
     --env PURPUR_OUTLINE_API_KEY=($secrets.PURPUR_OUTLINE_API_KEY)
     --workdir $path
     --user (id --user):(id --group)
-    localhost/maki --yolo)
+    localhost/maki)
 }
 
 def "main update" [--cache] {
