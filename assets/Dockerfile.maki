@@ -1,10 +1,12 @@
 FROM alpine:latest
 
 # base stuff
-RUN apk add --no-cache curl bash jq libstdc++ libgcc
+RUN apk add --no-cache curl bash jq libc++ libstdc++ libgcc
 
 # all other packages I want inside the containers
-RUN apk add --no-cache rust cargo git jujutsu ripgrep nushell nodejs npm pnpm python3
+RUN apk add --no-cache rust cargo git jujutsu ripgrep nushell nodejs npm pnpm python3 py3-pip
+
+RUN npm install --global @llamaindex/liteparse
 
 RUN adduser -D maki
 
