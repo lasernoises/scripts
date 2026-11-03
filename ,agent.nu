@@ -28,8 +28,9 @@ def run_agent [path: string] {
     localhost/maki --yolo)
 }
 
-def "main update" [] {
-  open --raw ($env.FILE_PWD + '/assets/Dockerfile.maki') | docker build --pull --no-cache --tag localhost/maki -
+def "main update" [--cache] {
+  open --raw ($env.FILE_PWD + '/assets/Dockerfile.maki')
+    | docker build --pull ...(if $cache {[]} else {[--no-cache]}) --tag localhost/maki -
 }
 
 def "main run" [] {
