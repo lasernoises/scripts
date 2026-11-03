@@ -35,10 +35,12 @@ def "main update" [--cache] {
 }
 
 def "main run" [] {
+  let parent_dir = pwd | path parse | get parent
+
   assert (
-    (pwd | str starts-with $'($nu.home-dir)/Projects') or
-    (pwd | str starts-with $'($nu.home-dir)/clones') or
-    (pwd | str starts-with $'($nu.home-dir)/purpur/projects')
+    ($parent_dir | str starts-with $'($nu.home-dir)/Projects') or
+    ($parent_dir | str starts-with $'($nu.home-dir)/clones') or
+    ($parent_dir | str starts-with $'($nu.home-dir)/purpur/projects')
   )
 
   run_agent (pwd)
