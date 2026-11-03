@@ -4,7 +4,7 @@ FROM alpine:latest
 RUN apk add --no-cache curl bash jq libstdc++ libgcc
 
 # all other packages I want inside the containers
-RUN apk add --no-cache rust cargo git jujutsu ripgrep nushell nodejs npm pnpm
+RUN apk add --no-cache rust cargo git jujutsu ripgrep nushell nodejs npm pnpm python3
 
 RUN adduser -D maki
 
